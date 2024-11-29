@@ -1,4 +1,6 @@
-/acid/obj/Debug/net8.0/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs
-/acid/obj/
-/.idea/
-/acid/bin/
+bin/
+obj/
+.idea/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
