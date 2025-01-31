@@ -3,7 +3,7 @@ namespace Samples.Scheduling;
 public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
     : Saga<MeasurementsSimulatorSaga.SagaState>,
         IAmStartedByMessages<ApplicationStarted>,
-        IHandleTimeouts<TimeoutTriggeredV1>
+        IHandleTimeouts<TimeoutTriggered>
 {
     public const int IntervalInSeconds = 5;
     
@@ -11,32 +11,35 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
     {
         mapper.MapSaga(messageProperty => messageProperty.AggregateId)
             .ToMessage<ApplicationStarted>(messageProperty => messageProperty.AggregateId)
-            .ToMessage<TimeoutTriggeredV1>(messageProperty => messageProperty.AggregateId);
+            .ToMessage<TimeoutTriggered>(messageProperty => messageProperty.AggregateId);
     }
     
-    public Task Handle(ApplicationStarted message, IMessageHandlerContext context)
+    public async Task Handle(ApplicationStarted message, IMessageHandlerContext context)
     {
-        Data.Started = true;
-        return Task.CompletedTask;
+        Data.LastMeasuredValue = 0;
+        await RequestTimeout(context,
+            TimeSpan.FromSeconds(IntervalInSeconds),
+            new TimeoutTriggered(Data.AggregateId)
+        );
     }
 
-    public async Task Timeout(TimeoutTriggeredV1 state, IMessageHandlerContext context)
+    public async Task Timeout(TimeoutTriggered timeoutMessage, IMessageHandlerContext context)
     {
         await context.Send(new SendSimulatedMeasurements(
             "meter-1", 
-            123L, 
+            ++Data.LastMeasuredValue, 
             dateTimeProvider.Now()) // TODO: susceptible to drifting
         );
 
         await RequestTimeout(context,
             TimeSpan.FromSeconds(IntervalInSeconds), // TODO: susceptible to drifting
-            new TimeoutTriggeredV1(Data.AggregateId));
+            new TimeoutTriggered(Data.AggregateId));
     }
     
     public class SagaState : ContainSagaData
     {
-        public string AggregateId { get; set; }
-        public bool Started { get; set; }
+        public string AggregateId { get; set; } = null!;
+        public long LastMeasuredValue { get; set; }
     }
 
 }
