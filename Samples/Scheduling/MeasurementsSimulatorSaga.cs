@@ -28,7 +28,7 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         await context.Send(new SendSimulatedMeasurements(
             "meter-1", 
             ++Data.LastMeasuredValue, 
-            dateTimeProvider.Now()) // TODO: susceptible to drifting
+            dateTimeProvider.Now())
         );
 
         await RequestTimeout(context,
