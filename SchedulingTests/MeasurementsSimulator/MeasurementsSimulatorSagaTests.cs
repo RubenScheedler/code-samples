@@ -1,9 +1,9 @@
 using Moq;
 using NServiceBus.Testing;
-using Samples.Scheduling;
+using Samples.MeasurementsSimulator;
 using Shouldly;
 
-namespace SamplesTests.Scheduling;
+namespace SamplesTests.MeasurementsSimulator;
 
 public class MeasurementsSimulatorSagaTests
 {

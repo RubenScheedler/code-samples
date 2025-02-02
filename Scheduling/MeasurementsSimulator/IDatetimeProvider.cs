@@ -1,4 +1,4 @@
-namespace Samples.Scheduling;
+namespace Samples.MeasurementsSimulator;
 
 public interface IDatetimeProvider
 {
