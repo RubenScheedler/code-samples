@@ -6,6 +6,7 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         IHandleTimeouts<TimeoutTriggered>
 {
     public const int IntervalInSeconds = 5;
+    private readonly TimeSpan _interval = TimeSpan.FromSeconds(IntervalInSeconds);
     
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<SagaState> mapper)
     {
@@ -18,22 +19,34 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
     {
         Data.LastMeasuredValue = 0;
         await RequestTimeout(context,
-            TimeSpan.FromSeconds(IntervalInSeconds),
-            new TimeoutTriggered(Data.AggregateId)
+            _interval,
+            new TimeoutTriggered(Data.AggregateId, dateTimeProvider.Now())
         );
     }
 
     public async Task Timeout(TimeoutTriggered timeoutMessage, IMessageHandlerContext context)
     {
-        await context.Send(new SendSimulatedMeasurements(
-            "meter-1", 
-            ++Data.LastMeasuredValue, 
-            dateTimeProvider.Now())
-        );
+        var measuredAt = timeoutMessage.TriggeredAt;
+        
+        var measurementsTasks = new List<Task>();
+        
+        while (measuredAt <= dateTimeProvider.Now()) // Fill in downtime gaps
+        {
+            measurementsTasks.Add(context.Send(new SendSimulatedMeasurements(
+                "meter-1", 
+                ++Data.LastMeasuredValue, 
+                measuredAt)
+            ));
 
+            measuredAt = measuredAt.Add(_interval);
+        }
+
+        await Task.WhenAll(measurementsTasks);
+        
         await RequestTimeout(context,
-            TimeSpan.FromSeconds(IntervalInSeconds), // TODO: susceptible to drifting
-            new TimeoutTriggered(Data.AggregateId));
+            _interval, 
+            new TimeoutTriggered(Data.AggregateId, dateTimeProvider.Now()));
+
     }
     
     public class SagaState : ContainSagaData

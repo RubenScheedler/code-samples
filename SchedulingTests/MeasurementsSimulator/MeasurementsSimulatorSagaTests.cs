@@ -29,7 +29,7 @@ public class MeasurementsSimulatorSagaTests
     public async Task TimeoutV1_SendsSendSimulatedMeasurements()
     {
         // Arrange
-        var timeout = new TimeoutTriggered(AggregateId);
+        var timeout = new TimeoutTriggered(AggregateId, Now);
         
         // Act
         await _systemUnderTest.Timeout(timeout, _context);
@@ -43,7 +43,7 @@ public class MeasurementsSimulatorSagaTests
     public async Task TimeoutV1_SchedulesNextTimeout()
     {
         // Arrange
-        var timeout = new TimeoutTriggered(AggregateId);
+        var timeout = new TimeoutTriggered(AggregateId, Now);
         
         // Act
         await _systemUnderTest.Timeout(timeout, _context);

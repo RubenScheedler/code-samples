@@ -1,3 +1,3 @@
 namespace Samples.MeasurementsSimulator;
 
-public record TimeoutTriggered(string AggregateId) : IEvent;
+public record TimeoutTriggered(string AggregateId, DateTime TriggeredAt) : IEvent;
