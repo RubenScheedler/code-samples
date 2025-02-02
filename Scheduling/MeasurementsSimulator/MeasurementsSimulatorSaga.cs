@@ -2,7 +2,7 @@ namespace Samples.MeasurementsSimulator;
 
 public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
     : Saga<MeasurementsSimulatorSaga.SagaState>,
-        IAmStartedByMessages<ApplicationStarted>,
+        IAmStartedByMessages<SimulationStarted>,
         IHandleTimeouts<TimeoutTriggered>
 {
     public const int IntervalInSeconds = 5;
@@ -10,11 +10,11 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<SagaState> mapper)
     {
         mapper.MapSaga(messageProperty => messageProperty.AggregateId)
-            .ToMessage<ApplicationStarted>(messageProperty => messageProperty.AggregateId)
+            .ToMessage<SimulationStarted>(messageProperty => messageProperty.AggregateId)
             .ToMessage<TimeoutTriggered>(messageProperty => messageProperty.AggregateId);
     }
     
-    public async Task Handle(ApplicationStarted message, IMessageHandlerContext context)
+    public async Task Handle(SimulationStarted message, IMessageHandlerContext context)
     {
         Data.LastMeasuredValue = 0;
         await RequestTimeout(context,
