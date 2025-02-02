@@ -5,7 +5,7 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         IAmStartedByMessages<SimulationStarted>,
         IHandleTimeouts<TimeoutTriggered>
 {
-    public const int IntervalInSeconds = 5;
+    public const int IntervalInSeconds = 3600;
     private readonly TimeSpan _interval = TimeSpan.FromSeconds(IntervalInSeconds);
     
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<SagaState> mapper)

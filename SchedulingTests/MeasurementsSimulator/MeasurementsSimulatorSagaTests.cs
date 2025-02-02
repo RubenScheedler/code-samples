@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace SamplesTests.MeasurementsSimulator;
 
-public class MeasurementsSimulatorSagaTests
+public partial class MeasurementsSimulatorSagaTests
 {
     private const string AggregateId = "measurements-processor-backend";
     
