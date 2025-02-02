@@ -57,30 +57,32 @@ public class MeasurementsSimulatorSagaTests
     [Fact]
     public async Task Saga_AfterMultipleIntervalsOfDowntime_SendsCommandForEveryInterval()
     {
-        // Arrange (move the clock 3 intervals ahead)
-        var expectedAmountOfCommands = 3;
-        _datetimeProvider.Setup(provider => provider.Now())
-            .Returns(Now.AddSeconds(expectedAmountOfCommands * MeasurementsSimulatorSaga.IntervalInSeconds));
-        
+        // Arrange
         var systemUnderTest = new TestableSaga<MeasurementsSimulatorSaga, MeasurementsSimulatorSaga.SagaState>(
-                () => new MeasurementsSimulatorSaga(_datetimeProvider.Object), 
-                Now
+            () => new MeasurementsSimulatorSaga(_datetimeProvider.Object), 
+            Now
         );
-
-        var applicationStarted = new SimulationStarted(AggregateId);
-        await systemUnderTest.Handle(applicationStarted);
         
-        // Act (trigger timeout message)
+        // Start the timeout loop
+        var simulationStarted = new SimulationStarted(AggregateId);
+        await systemUnderTest.Handle(simulationStarted);
+        
+        // Skip 3 intervals into the future
+        _datetimeProvider.Setup(provider => provider.Now())
+            .Returns(Now.AddSeconds(3 * MeasurementsSimulatorSaga.IntervalInSeconds));
+        
+        // Act
+        // Trigger timeout message
         var result = await systemUnderTest
             .AdvanceTime(TimeSpan.FromSeconds(MeasurementsSimulatorSaga.IntervalInSeconds));
         
         // Assert
-        result.Length.ShouldBe(1); // One timeout has triggered. We had ~ 3 intervals of downtime
+        result.Length.ShouldBe(1); // One timeout has triggered, even though 3 intervals passed
         var sentCommands
             = result[0].Context.SentMessages
                 .Select(m => m.Message)
                 .OfType<SendSimulatedMeasurements>()
                 .ToList();
-        sentCommands.Count.ShouldBe(expectedAmountOfCommands);
+        sentCommands.Count.ShouldBe(4); // 1 + 3 to fill the gaps
     }
 }
