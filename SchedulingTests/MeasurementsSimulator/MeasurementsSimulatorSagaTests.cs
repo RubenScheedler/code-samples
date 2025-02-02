@@ -57,19 +57,22 @@ public class MeasurementsSimulatorSagaTests
     [Fact]
     public async Task Saga_AfterMultipleIntervalsOfDowntime_SendsCommandForEveryInterval()
     {
-        // Arrange
+        // Arrange (move the clock 3 intervals ahead)
         var expectedAmountOfCommands = 3;
+        _datetimeProvider.Setup(provider => provider.Now())
+            .Returns(Now.AddSeconds(expectedAmountOfCommands * MeasurementsSimulatorSaga.IntervalInSeconds));
+        
         var systemUnderTest = new TestableSaga<MeasurementsSimulatorSaga, MeasurementsSimulatorSaga.SagaState>(
                 () => new MeasurementsSimulatorSaga(_datetimeProvider.Object), 
                 Now
         );
 
-        var applicationStarted = new ApplicationStarted(AggregateId);
+        var applicationStarted = new SimulationStarted(AggregateId);
         await systemUnderTest.Handle(applicationStarted);
         
-        // Act (simulate downtime by advancing more than <interval>)
+        // Act (trigger timeout message)
         var result = await systemUnderTest
-            .AdvanceTime(expectedAmountOfCommands * TimeSpan.FromSeconds(MeasurementsSimulatorSaga.IntervalInSeconds));
+            .AdvanceTime(TimeSpan.FromSeconds(MeasurementsSimulatorSaga.IntervalInSeconds));
         
         // Assert
         result.Length.ShouldBe(1); // One timeout has triggered. We had ~ 3 intervals of downtime
