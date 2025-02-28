@@ -2,11 +2,17 @@
 
 public class Order
 {
-    private Guid Id { get; set; }
+    public Guid Id { get; }
     public List<Guid> Products { get; } = [];
-
+    public bool IsCancelled { get; private set; }
+    
     public void AddProduct(Guid productId)
     {
+        if (IsCancelled)
+        {
+            // What to do?
+        }
+        
         if (!Products.Contains(productId))
         {
             Products.Add(productId);
@@ -17,9 +23,14 @@ public class Order
     {
         if (!Products.Contains(productId))
         {
-            throw new InvalidOperationException();
+            // What to do?
         }
         
         Products.Remove(productId);
+    }
+
+    public void Cancel()
+    {
+        IsCancelled = true;
     }
 }
