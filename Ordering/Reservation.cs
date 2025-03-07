@@ -1,32 +1,32 @@
 ﻿namespace Ordering;
 
-public class Order
+public class Reservation
 {
     public Guid Id { get; }
-    public List<Guid> Products { get; } = [];
+    public List<long> Tables { get; } = [];
     public bool IsCancelled { get; private set; }
     
-    public void AddProduct(Guid productId)
+    public void AddTable(long tableNumber)
     {
         if (IsCancelled)
         {
             // What to do?
         }
         
-        if (!Products.Contains(productId))
+        if (!Tables.Contains(tableNumber))
         {
-            Products.Add(productId);
+            Tables.Add(tableNumber);
         }
     }
 
-    public void RemoveProduct(Guid productId)
+    public void RemoveTable(long tableNumber)
     {
-        if (!Products.Contains(productId))
+        if (!Tables.Contains(tableNumber))
         {
             // What to do?
         }
         
-        Products.Remove(productId);
+        Tables.Remove(tableNumber);
     }
 
     public void Cancel()
