@@ -7,6 +7,11 @@ public class AddTableHandler(IReservationRepository repository) : IHandleMessage
     public async Task Handle(AddTable command, IMessageHandlerContext context)
     {
         var reservation = await repository.Get(command.ReservationId);
+
+        if (reservation is null)
+        {
+            // TODO what do we do?
+        }
         
         reservation.AddTable(command.TableNumber);
 

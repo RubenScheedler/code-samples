@@ -1,8 +1,8 @@
 ﻿namespace Ordering;
 
-public class Reservation
+public class Reservation(Guid id)
 {
-    public Guid Id { get; }
+    public Guid Id { get; } = id;
     public List<long> Tables { get; } = [];
     public bool IsCancelled { get; private set; }
     
@@ -34,3 +34,12 @@ public class Reservation
         IsCancelled = true;
     }
 }
+
+
+
+
+
+
+
+
+

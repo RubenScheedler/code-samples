@@ -2,10 +2,18 @@
 
 public record CreateReservation(Guid Id);
 
-public class CreateReservationHandler : IHandleMessages<CreateReservation>
+public class CreateReservationHandler(IReservationRepository repository) : IHandleMessages<CreateReservation>
 {
-    public async Task Handle(CreateReservation message, IMessageHandlerContext context)
+    public async Task Handle(CreateReservation command, IMessageHandlerContext context)
     {
-        throw new NotImplementedException();
+        var existingReservation = await repository.Get(command.Id);
+
+        if (existingReservation is not null)
+        {
+            // TODO what do we do?
+        }
+
+        await repository.Save(existingReservation);
     }
 }
+
