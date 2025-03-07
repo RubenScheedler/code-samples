@@ -6,11 +6,11 @@ public class RemoveTableHandler(IReservationRepository repository) : IHandleMess
 {
     public async Task Handle(RemoveTable command, IMessageHandlerContext context)
     {
-        var order = await repository.Get(command.ReservationId);
+        var reservation = await repository.Get(command.ReservationId);
         
-        order.RemoveTable(command.TableId);
+        reservation.RemoveTable(command.TableId);
 
-        await repository.Save(order);
+        await repository.Save(reservation);
     }
 }
 

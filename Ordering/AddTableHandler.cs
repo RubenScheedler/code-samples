@@ -1,16 +1,16 @@
 ﻿namespace Ordering;
 
-public record AddTable(Guid OrderId, long TableNumber);
+public record AddTable(Guid ReservationId, long TableNumber);
 
 public class AddTableHandler(IReservationRepository repository) : IHandleMessages<AddTable>
 {
     public async Task Handle(AddTable command, IMessageHandlerContext context)
     {
-        var order = await repository.Get(command.OrderId);
+        var reservation = await repository.Get(command.ReservationId);
         
-        order.AddTable(command.TableNumber);
+        reservation.AddTable(command.TableNumber);
 
-        await repository.Save(order);
+        await repository.Save(reservation);
     }
 }
 
