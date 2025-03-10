@@ -5,7 +5,7 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         IAmStartedByMessages<SimulationStarted>,
         IHandleTimeouts<TimeoutTriggered>
 {
-    public const int IntervalInSeconds = 5;
+    public const int IntervalInSeconds = 3600;
     
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<SagaState> mapper)
     {
@@ -32,7 +32,7 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         );
 
         await RequestTimeout(context,
-            TimeSpan.FromSeconds(IntervalInSeconds), // TODO: susceptible to drifting
+            TimeSpan.FromSeconds(IntervalInSeconds),
             new TimeoutTriggered(Data.AggregateId));
     }
     
