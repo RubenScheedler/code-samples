@@ -8,8 +8,9 @@ using Shouldly;
 
 public partial class MeasurementsSimulatorSagaTests
 {
+    // hide actual name for demo: Timeout_OldExistingMessageWithoutTriggeredAt_YieldsOneMessage
     [Fact]
-    public async Task Timeout_OldExistingMessageWithoutTriggeredAt_YieldsOneMessage()
+    public async Task MissingTest()
     {
         // Arrange
         var timeout = JsonSerializer.Deserialize<TimeoutTriggered>("{\"AggregateId\": \""+AggregateId+"\"}");
