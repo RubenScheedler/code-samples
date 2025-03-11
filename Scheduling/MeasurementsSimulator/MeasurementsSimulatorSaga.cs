@@ -33,8 +33,8 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
         while (measuredAt <= dateTimeProvider.Now()) // Fill in downtime gaps
         {
             measurementsTasks.Add(context.Send(new SendSimulatedMeasurements(
-                "meter-1", 
-                ++Data.LastMeasuredValue, 
+                "sensor-1", 
+                GenerateStubTemperatureValue(), 
                 measuredAt)
             ));
 
@@ -48,7 +48,15 @@ public class MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider)
             new TimeoutTriggered(Data.AggregateId, dateTimeProvider.Now()));
 
     }
+
+    #region Stub value calculations
+    private long GenerateStubTemperatureValue()
+    {
+        return ++Data.LastMeasuredValue;
+    }
     
+    #endregion
+
     public class SagaState : ContainSagaData
     {
         public string AggregateId { get; set; } = null!;
